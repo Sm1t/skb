@@ -9,13 +9,18 @@ app.get('/', (req, res) => {
   });
 });
 
+
+/*--------------- 1 ---------------*/
+
 app.get('/task2A', (req, res) => {
 	const sum = (+req.query.a || 0) + (+req.query.b || 0);
 	res.send(sum.toString());
 });
 
+
+/*--------------- 2 ---------------*/
+
 function with_initials(fullname){
-	//const re = new RegExp('([A-Za-z]*\\s?)+');
 	const re = new RegExp('([A-Za-zа-яА-ЯÀ-ÿ]*)?\\s?([A-Za-zа-яА-ЯÀ-ÿ]*)?\\s?([A-Za-zа-яА-ЯÀ-ÿ]*)?\\s?([0-9A-Za-zа-яА-Я]*)?');
 	const first = new RegExp('([A-ZА-Яa-zа-яÀ-ÿ])');
 	const array = fullname.match(re);
@@ -53,9 +58,30 @@ function with_initials(fullname){
 	return result;
 }
 
+
 app.get('/task2B', (req, res) => {
 	const surname = with_initials(req.query.fullname);
 	res.send(surname);
+});
+
+
+/*--------------- 3 ---------------*/
+
+function canonize(url){
+	const re = new RegExp('@?(https?:)?(\/\/)?(www.)?((telegram|vk|vkontakte|twitter|github)[^\/]*\/)?([a-zA-Z0-9]*)', 'i');
+	const username = url.match(re)[6];
+	return '@' + username;
+}
+
+
+app.get('/task2C', (req, res) => {
+	const username = canonize(req.query.username);
+	if (username == '@') {
+		res.send('Invalid username');
+	} else{
+		res.send(username);
+	}
+	
 });
 
 app.listen(3000, () => {
