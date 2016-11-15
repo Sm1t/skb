@@ -21,9 +21,11 @@ app.get('/task2A', (req, res) => {
 /*--------------- 2 ---------------*/
 
 function with_initials(fullname){
-	const re = new RegExp('([A-Za-zа-яА-ЯÀ-ÿ]*)?\\s?([A-Za-zа-яА-ЯÀ-ÿ]*)?\\s?([A-Za-zа-яА-ЯÀ-ÿ]*)?\\s?([0-9A-Za-zа-яА-Я]*)?');
+	const re = new RegExp('([A-Za-zа-яА-ЯÀ-ÿ]*)?\\s?([A-Za-zа-яА-ЯÀ-ÿ]*)?\\s?([A-Za-zа-яА-ЯÀ-ÿ]*)?\\s?([A-Za-zа-яА-Я]*)?');
+	const reInvalid = new RegExp('([0-9])');
 	const first = new RegExp('([A-ZА-Яa-zа-яÀ-ÿ])');
 	const array = fullname.match(re);
+	const checkInvalid = fullname.match(reInvalid);
 	var surname = array[3];
 	var name = '';
 	var patr = '';
@@ -51,7 +53,7 @@ function with_initials(fullname){
 		result = surname+ ' ' + initials;
 	}
 
-	if (array[4] != null) {
+	if (array[4] != null || checkInvalid != null) {
 		result = 'Invalid fullname';
 	}
 
