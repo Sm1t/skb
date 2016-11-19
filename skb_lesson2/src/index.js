@@ -21,11 +21,18 @@ app.get('/task2A', (req, res) => {
 /*--------------- 2 ---------------*/
 
 function with_initials(fullname){
-	const re = new RegExp('([A-Za-zа-яА-ЯÀ-ÿ]*)?\\s?([A-Za-zа-яА-ЯÀ-ÿ]*)?\\s?([A-Za-zа-яА-ЯÀ-ÿ]*)?\\s?([A-Za-zа-яА-Я]*)?');
-	const reInvalid = new RegExp('([0-9])');
+	const re = new RegExp('(?:\\s*)([A-Za-zа-яА-ЯÀ-ÿ\']*)?(?:\\s*)([A-Za-zа-яА-ЯÀ-ÿ\']*)?(?:\\s*)([A-Za-zа-яА-ЯÀ-ÿ\']*)?(?:\\s*)([A-Za-zа-яА-ЯÀ-ÿ\']*)?');
+	const reInvalid = new RegExp('([0-9_\/])');
 	const first = new RegExp('([A-ZА-Яa-zа-яÀ-ÿ])');
 	const array = fullname.match(re);
+	if (array[4] != null) {return 'Invalid fullname';}
 	const checkInvalid = fullname.match(reInvalid);
+	if (checkInvalid != null) {return 'Invalid fullname';}
+	for (var i = 3; i >= 1; i--) { 
+		if (fullname.match('[À-ÿ]') == null && array[i]) {
+			array[i] = array[i].toLowerCase().replace(/[a-zа-я]/, array[i].match(first)[1].toUpperCase());
+		}
+	}
 	var surname = array[3];
 	var name = '';
 	var patr = '';
@@ -53,10 +60,6 @@ function with_initials(fullname){
 		result = surname+ ' ' + initials;
 	}
 
-	if (array[4] != null || checkInvalid != null) {
-		result = 'Invalid fullname';
-	}
-
 	return result;
 }
 
@@ -70,9 +73,12 @@ app.get('/task2B', (req, res) => {
 /*--------------- 3 ---------------*/
 
 function canonize(url){
-	const re = new RegExp('@?(https?:)?(\/\/)?(www.)?((telegram|vk|vkontakte|twitter|github)[^\/]*\/)?([a-zA-Z0-9]*)', 'i');
-	const username = url.match(re)[6];
-	return '@' + username;
+	const re = new RegExp('@?(https?:)?(\/\/)?(www.)?((telegram|vk|vkontakte|twitter|github)?[^\/]*\/)?([a-zA-Z0-9@_\.]*)', 'i');
+	const username = url.match(re)[6]; console.log(url.match(re));
+	if (username.match('@') == null ) {
+		return '@' + username;
+	} else return username;
+	
 }
 
 
