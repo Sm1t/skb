@@ -92,6 +92,73 @@ app.get('/task2C', (req, res) => {
 	
 });
 
+
+/*--------------- 4 ---------------*/
+
+
+app.get('/task2D', (req, res) => {
+	if (!req.query.color) {return res.send('Invalid color');}
+	var color = req.query.color;
+
+	const reRGB = new RegExp('(?:\\s*)?(rgb\\()(?:\\s*)?([0-9]{1,3})(?:\\s*)?,(?:\\s*)?([0-9]{1,3})(?:\\s*)?,(?:\\s*)?([0-9]{1,3})(?:\\s*)?\\)');
+	
+
+	const reHSL= new RegExp('(?:\\s*)?(hsl\\()(?:\\s*)?([0-9]{1,3})(?:\\s*)?,(?:%20)*?([0-9]{1,3})(?:%)(?:\\s*)?,(?:\\s*)?(?:%20)*?([0-9]{1,3})');
+	console.log(color.match(reHSL));
+
+	if (color.match(reHSL)) {
+		var hsl = require('hsl-to-hex');
+		var h = parseInt(color.match(reHSL)[2]);
+		var s = parseInt(color.match(reHSL)[3]);
+		var l = parseInt(color.match(reHSL)[4]);
+
+		if (s > 100 || l > 100) {return res.send('Invalid color');}
+
+		var hex = hsl(h, s, l);
+		return res.send(hex);
+	}
+
+	if (color.match(reRGB)) {
+		var r = parseInt(color.match(reRGB)[2]);
+		var g = parseInt(color.match(reRGB)[3]);
+		var b = parseInt(color.match(reRGB)[4]);
+
+		if (r > 255 || g > 255 || b > 255 || color.match('([^rgb0-9\\(\\),\\s])')) {return res.send('Invalid color');}
+
+		function componentToHex(c) {
+			var hex = c.toString(16);
+			return hex.length == 1 ? "0" + hex : hex;
+		}
+
+		function rgbToHex(r, g, b) {
+			return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+		}
+
+		return res.send(rgbToHex(r, g, b));
+	}
+
+	const invalid = new RegExp('([^A-Fa-f0-9\\s#])');
+	if (color.match(invalid)) {return res.send('Invalid color');}
+
+	const re = new RegExp('(#)?([^\\s][A-Fa-f0-9%]*)');
+	color = color.toLowerCase();
+	color = color.match(re)[2];
+	if (color.length != 3 && color.length != 6) {
+		return res.send('Invalid color');
+	}
+
+	if (color.length == 3) {
+		color = color[0]+color[0]+color[1]+color[1]+color[2]+color[2];
+	}
+	res.send('#'+color);
+});
+
+app.get('/test', (req, res) => {
+	var hsl = require('hsl-to-hex');
+	var hex = hsl(195, 100, 50);
+	return res.send(hex);
+	})
+
 app.listen(3000, () => {
   console.log('Your app listening on port 3000!');
 });
